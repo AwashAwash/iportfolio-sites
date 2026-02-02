@@ -33,6 +33,24 @@ Live demo: https://awashmasketech.co.uk
 git clone https://github.com/AwashAwash/iportfolio-sites.git
 cd iportfolio-sites
 
+
+
+## Security Scanning (Trivy)
+
+Regular vulnerability scanning is performed on the container image.
+
+**Latest scan results** (on `awashawash/awash-portfolio:latest`):
+
+- Total vulnerabilities: X
+- CRITICAL: 0
+- HIGH: Y
+- MEDIUM: Z
+- LOW: W
+
+Command used:
+```bash
+trivy image --severity CRITICAL,HIGH awashawash/awash-portfolio:latest
+
 # Start
 docker compose up -d
 
