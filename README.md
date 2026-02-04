@@ -55,3 +55,12 @@ trivy image --severity CRITICAL,HIGH awashawash/awash-portfolio:latest
 docker compose up -d
 
 # Open http://localhost
+
+
+
+## Monitoring (Netdata)
+
+Real-time VPS & container monitoring dashboard.
+
+- Dashboard: https://netdata.awashmasketech.co.uk (or http://217.154.44.73:19999)
+- Metrics: CPU, RAM, Disk, Network, Docker stats
