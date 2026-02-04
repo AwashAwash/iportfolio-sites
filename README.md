@@ -64,3 +64,13 @@ Real-time VPS & container monitoring dashboard.
 
 - Dashboard: https://netdata.awashmasketech.co.uk (or http://217.154.44.73:19999)
 - Metrics: CPU, RAM, Disk, Network, Docker stats
+
+
+
+## Real-Time Monitoring (Netdata)
+
+Live dashboard with CPU, RAM, disk, network, Docker stats, and more.
+
+- Dashboard: https://netdata.awashmasketech.co.uk (or http://217.154.44.73:19999)
+- Secured via Cloudflare Tunnel / Access
+- Metrics updated every second
