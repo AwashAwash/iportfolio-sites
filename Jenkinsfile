@@ -1,11 +1,10 @@
 node {
-    stage('Checkout') {
-        git url: 'https://github.com/AwashAwash/iportfolio-sites.git', branch: 'main'
-    }
-
-    stage('Test Environment') {
-        echo 'Jenkins CI is working!'
-        sh 'docker --version'
-        sh 'trivy --version || echo "Trivy not installed yet"'
+    stage('Test') {
+        echo 'Jenkins pipeline is running!'
+        sh 'date'
+        sh 'whoami'
+        sh 'pwd'
+        sh 'ls -la'
+        sh 'git --version'
     }
 }
