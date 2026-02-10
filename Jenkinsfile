@@ -1,15 +1,44 @@
-
 pipeline {
     agent any
+
     stages {
-        stage('Test') {
+        stage('Checkout') {
             steps {
-                echo 'Jenkins is alive!'
-                sh 'date'
-                sh 'whoami'
-                sh 'pwd'
-                sh 'ls -la'
+                git url: 'https://github.com/AwashAwash/iportfolio-sites.git', branch: 'main'
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t awashawash/awash-portfolio:latest .'
+            }
+        }
+
+        stage('Install Trivy') {
+            steps {
+                sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin || true'
+            }
+        }
+
+        stage('Trivy Scan') {
+            steps {
+                sh 'trivy image --severity CRITICAL,HIGH awashawash/awash-portfolio:latest || true'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push awashawash/awash-portfolio:latest'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout || true'
         }
     }
 }
