@@ -9,13 +9,13 @@ Live demo: https://awashmasketech.co.uk
 
 ## Tech Stack
 
-- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript
-- **Web Server**: Nginx (alpine)
-- **Containerization**: Docker + Docker Compose
-- **Hosting**: Ubuntu 24.04 LTS VPS (Ionos)
-- **CDN & Security**: Cloudflare (Proxy, Flexible SSL, HSTS)
-- **CI / Security Scanning**: Trivy (planned GitHub Actions)
-- **Version Control**: Git + GitHub
+- Frontend: HTML5, CSS3, Bootstrap 5, JavaScript
+- Web Server: Nginx (alpine)
+- Containerization: Docker + Docker Compose
+- Hosting: Ubuntu 24.04 LTS VPS (Ionos)
+- CDN & Security: Cloudflare (Proxy, Flexible SSL, HSTS)
+- CI / Security Scanning: Trivy (planned GitHub Actions)
+- Version Control: Git + GitHub
 
 ## Security Features Implemented
 
@@ -28,7 +28,7 @@ Live demo: https://awashmasketech.co.uk
 
 ## Local Development
 
-```bash
+
 # Clone repo
 git clone https://github.com/AwashAwash/iportfolio-sites.git
 cd iportfolio-sites
@@ -48,7 +48,7 @@ Regular vulnerability scanning is performed on the container image.
 - LOW: W
 
 Command used:
-```bash
+
 trivy image --severity CRITICAL,HIGH awashawash/awash-portfolio:latest
 
 # Start
