@@ -14,9 +14,9 @@ pipeline {
             }
         }
 
-        stage('Install Trivy (if needed)') {
+        stage('Install Trivy') {
             steps {
-                sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin || echo "Trivy already installed"'
+                sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin || true'
             }
         }
 
