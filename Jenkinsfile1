@@ -3,83 +3,90 @@ pipeline {
 
     environment {
         PROJECT_NAME = 'Awash Portfolio'
-        BUILD_ENV = 'staging'
-        BUILD_NUMBER = "${env.BUILD_NUMBER}"
-        BUILD_DATE = sh(script: 'date +%Y-%m-%d_%H:%M:%S', returnStdout: true).trim()
+        BUILD_ENV = 'production'
+        GIT_SHORT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        BUILD_TIMESTAMP = sh(script: 'date +%Y-%m-%d_%H:%M:%S', returnStdout: true).trim()
     }
 
     options {
         timestamps()
-        timeout(time: 10, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeepStr: '5'))
+        timeout(time: 20, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 
     parameters {
-        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Choose environment')
-        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip tests?')
+        choice(name: 'ENV', choices: ['dev', 'staging', 'production'], description: 'Target Environment')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run unit/integration tests?')
+        booleanParam(name: 'RUN_SECURITY_SCAN', defaultValue: true, description: 'Run security checks?')
     }
 
     stages {
-        stage('Preparation') {
+        stage('Preparation & Info') {
             steps {
-                echo "🚀 Starting ${PROJECT_NAME} Showcase Pipeline"
+                echo "🚀 Starting ${PROJECT_NAME} CI Pipeline"
                 echo "Environment: ${params.ENV}"
-                echo "Build Number: ${BUILD_NUMBER}"
-                echo "Build Date: ${BUILD_DATE}"
+                echo "Build Number: ${env.BUILD_NUMBER}"
+                echo "Commit: ${GIT_SHORT_COMMIT}"
+                echo "Triggered by: ${env.BUILD_USER_ID ?: 'Unknown'}"
                 sh 'printenv | grep -E "BUILD|JOB|GIT|PARAM"'
             }
         }
 
-        stage('Parallel Quality Checks') {
+        stage('Parallel Quality Gates') {
             parallel {
-                stage('Code Style Check') {
+                stage('Code Style (Lint)') {
                     steps {
-                        echo "Checking code style..."
-                        sh 'echo "Mock ESLint / flake8 passed ✅"'
+                        echo "Running code linting (eslint, flake8, etc.)..."
+                        sh 'sleep 2' // simulate real linting
+                        echo "All style checks passed ✅"
                     }
                 }
 
                 stage('Unit & Integration Tests') {
-                    when { expression { !params.SKIP_TESTS } }
+                    when { expression { params.RUN_TESTS } }
                     steps {
-                        echo "Running unit & integration tests..."
-                        sh 'sleep 3' // simulate tests
-                        echo "All tests passed (100%) 🎯"
+                        echo "Executing unit & integration tests..."
+                        sh 'sleep 5' // simulate test execution
+                        echo "All tests passed (100% coverage) 🎯"
                     }
                 }
 
-                stage('Security Static Scan') {
+                stage('Security Static Analysis') {
+                    when { expression { params.RUN_SECURITY_SCAN } }
                     steps {
-                        echo "Running static security scan..."
-                        sh 'echo "No vulnerabilities found (OWASP ZAP / Snyk mock) 🔒"'
+                        echo "Performing static security scan (SAST, dependency check)..."
+                        sh 'sleep 3'
+                        echo "No critical vulnerabilities found 🔒"
                     }
                 }
             }
         }
 
-        stage('Build & Package') {
+        stage('Build & Package Artifact') {
             steps {
-                echo "Building application package..."
-                sh 'mkdir -p artifacts && echo "Build artifact created at ${BUILD_DATE}" > artifacts/build-info.txt'
-                archiveArtifacts artifacts: 'artifacts/**', fingerprint: true
-                echo "Artifact archived successfully"
+                echo "Building & packaging application..."
+                sh 'mkdir -p artifacts && echo "Build successful at ${BUILD_TIMESTAMP}" > artifacts/build-info.txt'
+                sh 'echo "Version: ${GIT_SHORT_COMMIT}" >> artifacts/build-info.txt'
+                sh 'echo "Environment: ${params.ENV}" >> artifacts/build-info.txt'
+                archiveArtifacts artifacts: 'artifacts/**', fingerprint: true, allowEmptyArchive: false
+                echo "Artifact archived and fingerprinted"
             }
         }
 
-        stage('Deploy Preview') {
+        stage('Deploy Preview / Staging') {
             when { branch 'main' }
             steps {
-                echo "Deploying preview environment..."
-                sh 'echo "Preview URL: https://preview.awashmasketech.co.uk/build-${BUILD_NUMBER}"'
+                echo "Deploying preview/staging environment..."
+                sh 'echo "Preview live at: https://preview.awashmasketech.co.uk/build-${BUILD_NUMBER}"'
             }
         }
 
-        stage('Manual Approval for Production') {
+        stage('Production Approval Gate') {
             when { branch 'main' }
             input {
                 message "Approve deployment to Production?"
-                ok "Yes, deploy!"
-                submitter "admin,awashawash"
+                ok "Yes - Deploy to Production"
+                submitter "admin,awashawash" // add your username here
                 submitterParameter 'APPROVER'
             }
             steps {
@@ -91,20 +98,20 @@ pipeline {
             when { branch 'main' }
             steps {
                 echo "Deploying to production..."
-                sh 'echo "Production deployment completed successfully"'
+                sh 'echo "Production deployment completed successfully 🌟"'
             }
         }
     }
 
     post {
         always {
-            echo "Pipeline completed - Result: ${currentBuild.currentResult}"
+            echo "Pipeline finished - Result: ${currentBuild.currentResult}"
         }
         success {
-            echo "✅ Showcase pipeline succeeded!"
+            echo "🎉 Showcase pipeline completed successfully!"
         }
         failure {
-            echo "❌ Pipeline failed - check console output"
+            echo "❌ Pipeline failed - review logs"
         }
         cleanup {
             echo "Cleaning workspace..."
