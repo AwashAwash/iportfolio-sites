@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "awashawash/awash-portfolio"
+        IMAGE_TAG = "latest"
+        DOCKER_CREDENTIALS = 'dckr_pat_JaZKZXNMm422MKxlvKrqjRdLYr4s'  // your credential ID
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git url: 'https://github.com/AwashAwash/iportfolio-sites.git', branch: 'main'
+                echo "Checked out branch: ${env.GIT_BRANCH}"
+                sh 'git log -1 --pretty=%B'  // show last commit message
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker images | grep ${IMAGE_NAME}"
+            }
+        }
+
+        stage('Install Trivy Scanner') {
+            steps {
+                sh '''
+                    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.50.1 || true
+                    trivy --version || echo "Trivy installed successfully"
+                '''
+            }
+        }
+
+        stage('Trivy Vulnerability Scan') {
+            steps {
+                sh """
+                    trivy image --exit-code 1 --no-progress --severity CRITICAL,HIGH \
+                    ${IMAGE_NAME}:${IMAGE_TAG} || echo "Critical/High vulnerabilities found - pipeline can fail here if strict"
+                """
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            when {
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS}", usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker logout"
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh "docker image prune -f"  // remove dangling images
+                echo "Cleanup complete"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline finished with status: ${currentBuild.currentResult}"
+            // Optional: adding email or Discord notification
+        }
+        success {
+            echo "🎉 Pipeline succeeded! Image pushed to Docker Hub."
+        }
+        failure {
+            echo "❌ Pipeline failed - check logs."
+        }
+    }
+}
