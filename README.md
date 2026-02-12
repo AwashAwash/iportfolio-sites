@@ -74,3 +74,15 @@ Live dashboard with CPU, RAM, disk, network, Docker stats, and more.
 - Dashboard: https://netdata.awashmasketech.co.uk (or http://217.154.44.73:19999)
 - Secured via Cloudflare Tunnel / Access
 - Metrics updated every second
+
+
+
+## CI/CD Pipeline (Jenkins)
+
+[![Jenkins Pipeline](https://img.shields.io/badge/CI-Jenkins-brightgreen?style=for-the-badge&logo=jenkins)](https://your-jenkins-url:8081/job/simple-showcase-test/)
+
+Automated multi-stage CI pipeline with:
+- Parallel quality checks (lint, tests, security)
+- Artifact archiving
+- Manual approval gate for production
+- Environment parameters & post-build cleanup
