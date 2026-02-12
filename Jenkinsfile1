@@ -1,0 +1,114 @@
+pipeline {
+    agent any
+
+    environment {
+        PROJECT_NAME = 'Awash Portfolio'
+        BUILD_ENV = 'staging'
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+        BUILD_DATE = sh(script: 'date +%Y-%m-%d_%H:%M:%S', returnStdout: true).trim()
+    }
+
+    options {
+        timestamps()
+        timeout(time: 10, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+
+    parameters {
+        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Choose environment')
+        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip tests?')
+    }
+
+    stages {
+        stage('Preparation') {
+            steps {
+                echo "🚀 Starting ${PROJECT_NAME} Showcase Pipeline"
+                echo "Environment: ${params.ENV}"
+                echo "Build Number: ${BUILD_NUMBER}"
+                echo "Build Date: ${BUILD_DATE}"
+                sh 'printenv | grep -E "BUILD|JOB|GIT|PARAM"'
+            }
+        }
+
+        stage('Parallel Quality Checks') {
+            parallel {
+                stage('Code Style Check') {
+                    steps {
+                        echo "Checking code style..."
+                        sh 'echo "Mock ESLint / flake8 passed ✅"'
+                    }
+                }
+
+                stage('Unit & Integration Tests') {
+                    when { expression { !params.SKIP_TESTS } }
+                    steps {
+                        echo "Running unit & integration tests..."
+                        sh 'sleep 3' // simulate tests
+                        echo "All tests passed (100%) 🎯"
+                    }
+                }
+
+                stage('Security Static Scan') {
+                    steps {
+                        echo "Running static security scan..."
+                        sh 'echo "No vulnerabilities found (OWASP ZAP / Snyk mock) 🔒"'
+                    }
+                }
+            }
+        }
+
+        stage('Build & Package') {
+            steps {
+                echo "Building application package..."
+                sh 'mkdir -p artifacts && echo "Build artifact created at ${BUILD_DATE}" > artifacts/build-info.txt'
+                archiveArtifacts artifacts: 'artifacts/**', fingerprint: true
+                echo "Artifact archived successfully"
+            }
+        }
+
+        stage('Deploy Preview') {
+            when { branch 'main' }
+            steps {
+                echo "Deploying preview environment..."
+                sh 'echo "Preview URL: https://preview.awashmasketech.co.uk/build-${BUILD_NUMBER}"'
+            }
+        }
+
+        stage('Manual Approval for Production') {
+            when { branch 'main' }
+            input {
+                message "Approve deployment to Production?"
+                ok "Yes, deploy!"
+                submitter "admin,awashawash"
+                submitterParameter 'APPROVER'
+            }
+            steps {
+                echo "Production deployment approved by ${APPROVER}!"
+            }
+        }
+
+        stage('Production Deployment') {
+            when { branch 'main' }
+            steps {
+                echo "Deploying to production..."
+                sh 'echo "Production deployment completed successfully"'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completed - Result: ${currentBuild.currentResult}"
+        }
+        success {
+            echo "✅ Showcase pipeline succeeded!"
+        }
+        failure {
+            echo "❌ Pipeline failed - check console output"
+        }
+        cleanup {
+            echo "Cleaning workspace..."
+            cleanWs()
+        }
+    }
+}
