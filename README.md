@@ -1,4 +1,4 @@
-# Awash Maskey Portfolio Site
+ Awash Maskey Portfolio Site
 
 Modern, containerized personal portfolio website built with Bootstrap template (iPortfolio).
 
@@ -7,7 +7,7 @@ Live demo: https://awashmasketech.co.uk
 ![Portfolio Screenshot](https://raw.githubusercontent.com/AwashAwash/iportfolio-sites/main/screenshots/homepage.png)
 <!-- Upload 1–3 screenshots later via GitHub web interface -->
 
-## Tech Stack
+ Tech Stack
 
 - Frontend: HTML5, CSS3, Bootstrap 5, JavaScript
 - Web Server: Nginx (alpine)
@@ -17,7 +17,7 @@ Live demo: https://awashmasketech.co.uk
 - CI / Security Scanning: Trivy (planned GitHub Actions)
 - Version Control: Git + GitHub
 
-## Security Features Implemented
+Security Features Implemented
 
 - Non-root user + SSH key-only authentication
 - UFW firewall with Cloudflare IP whitelisting
@@ -26,20 +26,20 @@ Live demo: https://awashmasketech.co.uk
 - HTTPS enforced via Cloudflare + HSTS
 - Containerized deployment (least privilege principle)
 
-## Local Development
+ Local Development
 
 
-# Clone repo
+ Clone repo
 git clone https://github.com/AwashAwash/iportfolio-sites.git
 cd iportfolio-sites
 
 
 
-## Security Scanning (Trivy)
+ Security Scanning (Trivy)
 
 Regular vulnerability scanning is performed on the container image.
 
-**Latest scan results** (on `awashawash/awash-portfolio:latest`):
+Latest scan results (on `awashawash/awash-portfolio:latest`):
 
 - Total vulnerabilities: X
 - CRITICAL: 0
@@ -51,14 +51,14 @@ Command used:
 
 trivy image --severity CRITICAL,HIGH awashawash/awash-portfolio:latest
 
-# Start
+ Start
 docker compose up -d
 
-# Open http://localhost
+ Open http://localhost
 
 
 
-## Monitoring (Netdata)
+ Monitoring (Netdata)
 
 Real-time VPS & container monitoring dashboard.
 
@@ -67,7 +67,7 @@ Real-time VPS & container monitoring dashboard.
 
 
 
-## Real-Time Monitoring (Netdata)
+ Real-Time Monitoring (Netdata)
 
 Live dashboard with CPU, RAM, disk, network, Docker stats, and more.
 
@@ -86,3 +86,20 @@ Automated multi-stage CI pipeline with:
 - Artifact archiving
 - Manual approval gate for production
 - Environment parameters & post-build cleanup
+
+-  Screenshots
+
+Pipeline Stages View
+![Pipeline Stages](screenshots/pipeline-stages.png)
+
+Console Output (running build)
+![Console Output](screenshots/console-output.png)
+
+ Approval Gate (manual production approval)
+![Approval Gate](screenshots/approval-gate.png)
+
+ Successful Build
+![Success Message](screenshots/success-build.png)
+
+Status
+[![Jenkins Pipeline](https://img.shields.io/badge/CI-Jenkins-brightgreen?style=for-the-badge&logo=jenkins)](https://your-jenkins-url:8081/job/portfolio-ci-showcase/)
