@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "awashawash/awash-portfolio"
         IMAGE_TAG = "latest"
-        DOCKER_CREDENTIALS = 'dckr_pat_JaZKZXNMm422MKxlvKrqjRdLYr4s'  // your credential ID
+        DOCKER_CREDENTIALS = '****s'  // your credential ID
     }
 
     stages {
