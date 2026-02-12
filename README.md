@@ -79,7 +79,7 @@ Live dashboard with CPU, RAM, disk, network, Docker stats, and more.
 
 ## CI/CD Pipeline (Jenkins)
 
-[![Jenkins Pipeline](https://img.shields.io/badge/CI-Jenkins-brightgreen?style=for-the-badge&logo=jenkins)](https://your-jenkins-url:8081/job/simple-showcase-test/)
+[![Jenkins Pipeline](https://img.shields.io/badge/CI-Jenkins-brightgreen?style=for-the-badge&logo=jenkins)]http://217.154.44.75:8081/job/simple-showcase-test/()
 
 Automated multi-stage CI pipeline with:
 - Parallel quality checks (lint, tests, security)
