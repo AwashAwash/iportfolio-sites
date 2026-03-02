@@ -5,17 +5,17 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets:
 
   - job_name: 'jenkins'
   metrics_path: /prometheus
     static_configs:
-      - targets: ['217.154.44.73:8081']   # use internal IP/container name if same network
+      - targets:]   # use internal IP/container name if same network
 
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets:
 
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['cadvisor:8080']
+      - targets:
