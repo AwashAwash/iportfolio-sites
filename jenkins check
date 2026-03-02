@@ -68,10 +68,10 @@ pipeline {
             // Optional: adding email or Discord notification
         }
         success {
-            echo "🎉 Pipeline succeeded! Image pushed to Docker Hub."
+            echo " Pipeline succeeded! Image pushed to Docker Hub."
         }
         failure {
-            echo "❌ Pipeline failed - check logs."
+            echo " Pipeline failed - check logs."
         }
     }
 }
