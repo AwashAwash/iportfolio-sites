@@ -1,88 +1,19 @@
-version: '3.8'
-
 services:
-  prometheus:
-    image: prom/prometheus:v2.51.2
-    container_name: prometheus
-    restart: unless-stopped
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    ports:
-      - "127.0.0.1:****"
-    networks:
-      - monitor-net
-
-  node-exporter:
-    image: prom/node-exporter:v1.8.2
-    container_name: node-exporter
+  jenkins:
+    image: jenkins-custom   # or your image name
+    container_name: jenkins
     restart: unless-stopped
     ports:
-      - "127.0.0.1:****"
+      - "127.0.0.1:8081:8080"
+      - "127.0.0.1:50000:50000"
     volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
-    networks:
-      - monitor-net
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    container_name: cadvisor
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:*****"
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    networks:
-      - monitor-net
-
-  grafana:
-    image: grafana/grafana:11.2.2
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:****"
-    volumes:
-      - grafana_data:/var/lib/grafana
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: "1000:1000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin123 # CHANGE THIS IMMEDIATELY!
-      # SMTP example (Gmail) - update with real values
-      - GF_SMTP_ENABLED=true
-      - GF_SMTP_HOST=smtp.****
-      - GF_SMTP_USER=***********
-      - GF_SMTP_PASSWORD=*****************
-      - GF_SMTP_FROM_ADDRESS=makey********
-      - GF_SMTP_FROM_NAME=Grafana VPS Alerts
-      - GF_SMTP_STARTTLS_POLICY=OpportunisticStartTLS
-    networks:
-      - monitor-net
-
-  jenkins-exporter:
-    image: prometheuscommunity/jenkins-exporter:latest
-    container_name: jenkins-exporter
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:*******"
-    environment:
-      - JENKINS_URL=http://217.1******
-      - JENKINS_USERNAME=********
-      - JENKINS_PASSWORD=********
-    networks:
-      - monitor-net
-
-networks:
-  monitor-net:
-    driver: bridge
-
-volumes:
-  prometheus_data:
-  grafana_data:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
