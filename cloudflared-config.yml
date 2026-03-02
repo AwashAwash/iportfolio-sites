@@ -3,7 +3,7 @@ credentials-file: /home/awash/.cloudflared/<your-tunnel-UUID>.json
 
 ingress:
   - hostname: grafana.awashmasketech.co.uk
-    service: http://localhost:3000
-  - hostname: prom.awashmasketech.co.uk
-    service: http://localhost:9090
+    service: http://localhost:********
+  - hostname: prom.awashmasket****ech.co.uk*****
+    service: http://localhost:********
   - service: http_status:404  # catch-all
