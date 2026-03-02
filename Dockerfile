@@ -1,14 +1,22 @@
-FROM jenkins/jenkins:lts-jdk17
+# Use official lightweight Nginx image from Alpine
+FROM nginx:alpine
 
-USER root
+# Remove default Nginx config & files
+RUN rm -rf /usr/share/nginx/html/* \
+    && rm -f /etc/nginx/conf.d/default.conf
 
-# Install Docker CLI (so pipelines can run docker build/push)
-RUN apt-get update && \
-    apt-get install -y docker.io && \
-    rm -rf /var/lib/apt/lists/*
+# Copy your static site files
+COPY html/ /usr/share/nginx/html/
 
-USER jenkins
+# Copy custom Nginx config with security headers
+COPY nginx-conf/default.conf /etc/nginx/conf.d/default.conf
 
-# Copy the plugin list & install all plugins during build
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+# Expose port (informational)
+EXPOSE 80
+
+# Healthcheck (good practice)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+
+# Run Nginx in foreground
+CMD ["nginx", "-g", "daemon off;"]

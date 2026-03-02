@@ -1,0 +1,15 @@
+# Docker
+*.log
+.dockerignore
+
+# Temp / backups
+*.zip
+*.bak
+*.tmp
+
+# macOS junk
+.DS_Store
+
+# Editor junk
+.idea/
+*.swp

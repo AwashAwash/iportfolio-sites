@@ -1,19 +1,18 @@
 services:
-  jenkins:
-    image: jenkins-custom   # or your image name
-    container_name: jenkins
+  web:
+    image: awashawash/awash-portfolio:latest
+    container_name: awash-site
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8081:8080"
-      - "127.0.0.1:50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    user: "1000:1000"
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - "127.0.0.1:8080:80"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/login"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
